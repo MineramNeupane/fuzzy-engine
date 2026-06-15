@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub - Study Management System</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>📚 StudyHub</h1>
+                <p>Study Command Center</p>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" onclick="switchPage('dashboard')">📊 Dashboard</button>
+                <button class="nav-btn" onclick="switchPage('course')">📖 Course</button>
+                <button class="nav-btn" onclick="switchPage('notes')">📝 Notes</button>
+                <button class="nav-btn" onclick="switchPage('analytics')">📈 Analytics</button>
+                <button class="nav-btn" onclick="switchPage('ai')">🤖 AI Assistant</button>
+                <button class="nav-btn" onclick="switchPage('tools')">🔧 Tools</button>
+                <button class="nav-btn" onclick="switchPage('plan')">📅 30-Day Plan</button>
+                <button class="nav-btn" onclick="switchPage('settings')">⚙️ Settings</button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="streak-box">🔥 <span id="streak-count">0</span> Day Streak</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard -->
+            <section id="dashboard" class="page active">
+                <h1>Dashboard</h1>
+                <div class="grid">
+                    <div class="card">
+                        <h2>Overall Progress</h2>
+                        <div id="progress-display" style="font-size: 36px; font-weight: bold; color: #D97B3F;">0%</div>
+                        <p id="lessons-display">0/0 Lessons</p>
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                    <div class="card">
+                        <h2>Quick Actions</h2>
+                        <button class="btn btn-primary" onclick="switchPage('course')">📚 Open Course</button>
+                        <button class="btn btn-secondary" onclick="switchPage('notes')">📝 Add Notes</button>
+                        <button class="btn btn-secondary" onclick="switchPage('ai')">🤖 Ask AI</button>
+                    </div>
+                    <div class="card">
+                        <h2>Study Stats</h2>
+                        <p>Days Studied: <strong id="days-studied">0</strong></p>
+                        <p>Lessons Completed: <strong id="lessons-completed">0</strong></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Course -->
+            <section id="course" class="page">
+                <h1>Course Modules</h1>
+                <div id="modules-container"></div>
+            </section>
+
+            <!-- Notes -->
+            <section id="notes" class="page">
+                <h1>Notes</h1>
+                <div class="card">
+                    <div class="form-group">
+                        <label>Select Module:</label>
+                        <select id="notes-module" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Notes:</label>
+                        <textarea id="notes-textarea" class="form-control" rows="12" placeholder="Write your notes here..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveNotes()">💾 Save Notes</button>
+                    <button class="btn btn-secondary" onclick="copyNotes()">📋 Copy to Clipboard</button>
+                    <button class="btn btn-secondary" onclick="exportNotesMarkdown()">📄 Export as Markdown</button>
+                    <button class="btn btn-secondary" onclick="generateQuizFromNotes()">❓ Generate Quiz</button>
+                </div>
+                <div id="notes-history" class="card" style="margin-top: 20px;">
+                    <h2>Notes History</h2>
+                    <div id="notes-list"></div>
+                </div>
+            </section>
+
+            <!-- Analytics -->
+            <section id="analytics" class="page">
+                <h1>Analytics</h1>
+                <div class="grid">
+                    <div class="card">
+                        <h2>Progress Summary</h2>
+                        <div id="analytics-summary"></div>
+                    </div>
+                    <div class="card">
+                        <h2>Study Activity</h2>
+                        <div id="study-activity"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Assistant -->
+            <section id="ai" class="page">
+                <h1>AI Assistant</h1>
+                <div class="card">
+                    <h2>Ask AI Questions</h2>
+                    <div class="form-group">
+                        <input type="text" id="ai-query" class="form-control" placeholder="Ask about your course...">
+                        <button class="btn btn-primary" onclick="askAI()">Ask</button>
+                    </div>
+                    <div id="ai-response" style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 6px; display: none;"></div>
+                </div>
+                <div class="card" style="margin-top: 20px;">
+                    <h2>Ollama Configuration</h2>
+                    <div class="form-group">
+                        <label>Ollama URL:</label>
+                        <input type="text" id="ollama-url" class="form-control" value="http://localhost:11434" placeholder="http://localhost:11434">
+                    </div>
+                    <div class="form-group">
+                        <label>Model:</label>
+                        <select id="ollama-model" class="form-control">
+                            <option value="llama3.1">Llama 3.1 (Recommended)</option>
+                            <option value="phi3">Phi 3 (Lightweight)</option>
+                            <option value="qwen2.5">Qwen 2.5</option>
+                            <option value="mistral">Mistral</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="testOllama()">🧪 Test Connection</button>
+                    <div id="ollama-status" style="margin-top: 10px;"></div>
+                </div>
+            </section>
+
+            <!-- Tools -->
+            <section id="tools" class="page">
+                <h1>Study Tools</h1>
+                <div class="grid" id="tools-grid"></div>
+            </section>
+
+            <!-- 30-Day Plan -->
+            <section id="plan" class="page">
+                <h1>30-Day Study Plan</h1>
+                <button class="btn btn-secondary" onclick="regeneratePlan()">🔄 Regenerate Plan</button>
+                <div id="plan-grid" style="margin-top: 20px;"></div>
+            </section>
+
+            <!-- Settings -->
+            <section id="settings" class="page">
+                <h1>Settings</h1>
+                <div class="card">
+                    <h2>Path Settings</h2>
+                    <div class="form-group">
+                        <label>Target Completion Date:</label>
+                        <input type="date" id="target-date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Daily Study Time (minutes):</label>
+                        <input type="number" id="daily-mins" class="form-control" value="120" min="30">
+                    </div>
+                    <button class="btn btn-primary" onclick="savePathSettings()">Save Settings</button>
+                </div>
+                <div class="card" style="margin-top: 20px;">
+                    <h2>Data Management</h2>
+                    <button class="btn btn-secondary" onclick="exportData()">📤 Export Data</button>
+                    <button class="btn btn-secondary" onclick="importData()">📥 Import Data</button>
+                    <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
